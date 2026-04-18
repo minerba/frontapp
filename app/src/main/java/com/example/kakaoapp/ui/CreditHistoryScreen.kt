@@ -49,13 +49,9 @@ private data class HistorySection(val year: String, val items: List<HistoryItem>
 
 private val KCB_HISTORY = listOf(
     HistorySection("2026년", listOf(
-        HistoryItem.Score("3. 10.", -12, 769, 757, "KCB"),
-        HistoryItem.Loan("2. 15.", "대출 잔액 변동", "한국스탠다드차타드은행 대출잔액이 변동됐어요", true),
-    )),
-    HistorySection("2025년", listOf(
-        HistoryItem.Score("11. 5.", +7, 762, 769, "KCB"),
-        HistoryItem.Loan("10. 20.", "대출 잔액 변동", "한국스탠다드차타드은행 대출잔액이 변동됐어요", false),
-        HistoryItem.Score("8. 2.", -5, 767, 762, "KCB"),
+        HistoryItem.Loan("3. 27.", "대출 잔액 변동", "한국스탠다드차타드 대출잔액이 변동됐어요", true),
+        HistoryItem.Loan("2. 27.", "대출 잔액 변동", "한국스탠다드차타드 대출잔액이 변동됐어요", false),
+        HistoryItem.Loan("1. 28.", "대출 잔액 변동", "한국스탠다드차타드 대출잔액이 변동됐어요", false),
     ))
 )
 
