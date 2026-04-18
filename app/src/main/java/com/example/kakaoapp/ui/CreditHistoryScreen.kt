@@ -21,13 +21,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import com.example.kakaoapp.R
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.kakaoapp.R
 import com.example.kakaoapp.ui.theme.*
 
 private val HistoryBlue = Color(0xFF4A9EFF)
-private val HistoryBlueBg = Color(0xFF1A3A6E)
+private val ScoreUp = Color(0xFF4ADE80)
+private val ScoreDown = Color(0xFFFF6B6B)
 
 private fun getLoanRate(score: Int): String = when {
     score >= 900 -> "최저 연 2.9%"
@@ -39,11 +40,36 @@ private fun getLoanRate(score: Int): String = when {
     else -> "최저 연 10% 이상"
 }
 
-private data class HistoryItem(
-    val date: String,
-    val title: String,
-    val desc: String,
-    val hasCard: Boolean
+private sealed class HistoryItem {
+    data class Loan(val date: String, val title: String, val desc: String, val hasCard: Boolean) : HistoryItem()
+    data class Score(val date: String, val change: Int, val from: Int, val to: Int, val agency: String) : HistoryItem()
+}
+
+private data class HistorySection(val year: String, val items: List<HistoryItem>)
+
+private val KCB_HISTORY = listOf(
+    HistorySection("2026년", listOf(
+        HistoryItem.Score("3. 10.", -12, 769, 757, "KCB"),
+        HistoryItem.Loan("2. 15.", "대출 잔액 변동", "한국스탠다드차타드은행 대출잔액이 변동됐어요", true),
+    )),
+    HistorySection("2025년", listOf(
+        HistoryItem.Score("11. 5.", +7, 762, 769, "KCB"),
+        HistoryItem.Loan("10. 20.", "대출 잔액 변동", "한국스탠다드차타드은행 대출잔액이 변동됐어요", false),
+        HistoryItem.Score("8. 2.", -5, 767, 762, "KCB"),
+    ))
+)
+
+private val NICE_HISTORY = listOf(
+    HistorySection("2026년", listOf(
+        HistoryItem.Loan("3. 26.", "대출 잔액 변동", "한국스탠다드차타드은행 대출잔액이 변동됐어요", true),
+        HistoryItem.Score("3. 3.", -8, 884, 876, "NICE"),
+    )),
+    HistorySection("2025년", listOf(
+        HistoryItem.Loan("12. 26.", "대출 잔액 변동", "한국스탠다드차타드은행 대출잔액이 변동됐어요", false),
+        HistoryItem.Score("11. 12.", +5, 879, 884, "NICE"),
+        HistoryItem.Loan("11. 26.", "대출 잔액 변동", "한국스탠다드차타드은행 대출잔액이 변동됐어요", false),
+        HistoryItem.Score("9. 4.", -3, 882, 879, "NICE"),
+    ))
 )
 
 @Composable
@@ -54,11 +80,7 @@ fun CreditHistoryScreen(
     onTabChange: (String) -> Unit
 ) {
     val score = if (scoreType == "KCB") 757 else 876
-    val items = listOf(
-        HistoryItem("3. 27.", "대출 잔액 변동", "한국스탠다드차타드 대출잔액이 변동됐어요", true),
-        HistoryItem("2. 27.", "대출 잔액 변동", "한국스탠다드차타드 대출잔액이 변동됐어요", false),
-        HistoryItem("1. 28.", "대출 잔액 변동", "한국스탠다드차타드 대출잔액이 변동됐어요", false),
-    )
+    val history = if (scoreType == "KCB") KCB_HISTORY else NICE_HISTORY
 
     Column(
         modifier = Modifier
@@ -142,54 +164,81 @@ fun CreditHistoryScreen(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-            Text("2026년", color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-            Spacer(modifier = Modifier.height(16.dp))
 
-            // 타임라인
-            Column(modifier = Modifier.padding(start = 20.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
-                items.forEach { item ->
-                    Box {
-                        Box(
-                            modifier = Modifier
-                                .offset(x = (-18).dp, y = 6.dp)
-                                .size(8.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFF4B5563))
-                        )
-                        Column {
-                            Text(item.date, color = TextGrayDark, fontSize = 12.sp)
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(item.title, color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(item.desc, color = TextGray, fontSize = 14.sp)
-                            if (item.hasCard) {
-                                Spacer(modifier = Modifier.height(12.dp))
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .background(CardDark)
-                                        .padding(16.dp)
-                                ) {
-                                    Text("대출 잔액을 확인해보세요", color = TextWhite, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Text("상환 후 잔액을 확인하고 다음 상환일을 준비하세요.", color = TextGray, fontSize = 14.sp, lineHeight = 20.sp)
-                                    Spacer(modifier = Modifier.height(16.dp))
-                                    OutlinedButton(
-                                        onClick = {},
-                                        shape = CircleShape,
-                                        colors = ButtonDefaults.outlinedButtonColors(contentColor = TextWhite),
-                                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
-                                    ) {
-                                        Text("자세히 보기", fontSize = 14.sp)
-                                    }
-                                }
+            // 연도별 히스토리
+            history.forEach { section ->
+                Text(section.year, color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Column(modifier = Modifier.padding(start = 20.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
+                    section.items.forEach { item ->
+                        Box {
+                            Box(
+                                modifier = Modifier
+                                    .offset(x = (-18).dp, y = 6.dp)
+                                    .size(8.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFF4B5563))
+                            )
+                            when (item) {
+                                is HistoryItem.Loan -> LoanItem(item)
+                                is HistoryItem.Score -> ScoreItem(item)
                             }
                         }
                     }
                 }
+                Spacer(modifier = Modifier.height(24.dp))
             }
-            Spacer(modifier = Modifier.height(24.dp))
         }
+    }
+}
+
+@Composable
+private fun LoanItem(item: HistoryItem.Loan) {
+    Column {
+        Text(item.date, color = TextGrayDark, fontSize = 12.sp)
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(item.title, color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(item.desc, color = TextGray, fontSize = 14.sp)
+        if (item.hasCard) {
+            Spacer(modifier = Modifier.height(12.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(CardDark)
+                    .padding(16.dp)
+            ) {
+                Text("대출 잔액을 확인해보세요", color = TextWhite, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text("상환 후 잔액을 확인하고 다음 상환일을 준비하세요.", color = TextGray, fontSize = 14.sp, lineHeight = 20.sp)
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedButton(
+                    onClick = {},
+                    shape = CircleShape,
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = TextWhite),
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
+                ) {
+                    Text("자세히 보기", fontSize = 14.sp)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ScoreItem(item: HistoryItem.Score) {
+    val isUp = item.change > 0
+    Column {
+        Text(item.date, color = TextGrayDark, fontSize = 12.sp)
+        Spacer(modifier = Modifier.height(2.dp))
+        Row {
+            Text("신용점수 ", color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+            Text("${Math.abs(item.change)}점", color = if (isUp) ScoreUp else ScoreDown, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+            Text(" ${if (isUp) "상승" else "하락"}", color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+        }
+        Spacer(modifier = Modifier.height(2.dp))
+        Text("${item.agency} ${item.from}점 → ${item.to}점", color = TextGray, fontSize = 14.sp)
     }
 }
