@@ -30,7 +30,7 @@ val BlueAccent = Color(0xFF4A9EFF)
 val BlueAccentBg = Color(0xFF1A2A3A)
 
 @Composable
-fun CreditScreen(onBack: () -> Unit, onNavigateToHistory: (String) -> Unit = {}) {
+fun CreditScreen(onBack: () -> Unit, onNavigateToHome: () -> Unit = {}, onNavigateToHistory: (String) -> Unit = {}) {
     var selectedTab by remember { mutableIntStateOf(0) }
 
     Column(
@@ -47,7 +47,9 @@ fun CreditScreen(onBack: () -> Unit, onNavigateToHistory: (String) -> Unit = {})
             IconButton(onClick = onBack) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, tint = TextWhite, modifier = Modifier.size(24.dp))
             }
-            Icon(Icons.Default.Home, contentDescription = null, tint = TextWhite, modifier = Modifier.size(20.dp))
+            IconButton(onClick = onNavigateToHome) {
+                Icon(Icons.Default.Home, contentDescription = null, tint = TextWhite, modifier = Modifier.size(20.dp))
+            }
         }
 
         Row(modifier = Modifier.fillMaxWidth()) {
@@ -182,7 +184,7 @@ fun CreditScreen(onBack: () -> Unit, onNavigateToHistory: (String) -> Unit = {})
                     Image(
                         painter = painterResource(R.drawable.icon_okt),
                         contentDescription = null,
-                        modifier = Modifier.size(44.dp).clip(RoundedCornerShape(12.dp)),
+                        modifier = Modifier.size(44.dp),
                         contentScale = ContentScale.Fit
                     )
                     Column(modifier = Modifier.weight(1f)) {

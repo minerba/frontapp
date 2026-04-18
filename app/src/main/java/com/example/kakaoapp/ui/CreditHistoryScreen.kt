@@ -50,6 +50,7 @@ private data class HistoryItem(
 fun CreditHistoryScreen(
     scoreType: String,
     onBack: () -> Unit,
+    onNavigateToHome: () -> Unit = {},
     onTabChange: (String) -> Unit
 ) {
     val score = if (scoreType == "KCB") 757 else 876
@@ -77,7 +78,7 @@ fun CreditHistoryScreen(
                 }
                 Text("조회·변동 내역", color = TextWhite, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
             }
-            IconButton(onClick = onBack) {
+            IconButton(onClick = onNavigateToHome) {
                 Icon(Icons.Default.Home, contentDescription = null, tint = TextWhite, modifier = Modifier.size(20.dp))
             }
         }
@@ -123,17 +124,12 @@ fun CreditHistoryScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Box(
-                        modifier = Modifier.size(40.dp).clip(CircleShape).background(HistoryBlueBg),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.icon_credit_score),
-                            contentDescription = null,
-                            modifier = Modifier.size(28.dp),
-                            contentScale = ContentScale.Fit
-                        )
-                    }
+                    Image(
+                        painter = painterResource(R.drawable.icon_credit_score),
+                        contentDescription = null,
+                        modifier = Modifier.size(40.dp),
+                        contentScale = ContentScale.Fit
+                    )
                     Column {
                         Text("${score}점으로 가능한", color = HistoryBlue, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                         Text("내 대출 최저 금리 보기", color = TextWhite, fontSize = 14.sp)

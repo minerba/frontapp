@@ -12,6 +12,12 @@ import kotlinx.coroutines.delay
 fun AppNavigation() {
     val navController = rememberNavController()
 
+    val navigateToHome: () -> Unit = {
+        navController.navigate("home") {
+            popUpTo("home") { inclusive = true }
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = "splash",
@@ -31,7 +37,6 @@ fun AppNavigation() {
             HomeScreen(onNavigateToCredit = { navController.navigate("credit_loading") })
         }
 
-        // 신용관리 로딩 → 2초 후 credit으로 replace
         composable("credit_loading") {
             CreditLoadingScreen(onBack = { navController.popBackStack() })
             LaunchedEffect(Unit) {
@@ -45,11 +50,11 @@ fun AppNavigation() {
         composable("credit") {
             CreditScreen(
                 onBack = { navController.popBackStack() },
+                onNavigateToHome = navigateToHome,
                 onNavigateToHistory = { type -> navController.navigate("history_loading/$type") }
             )
         }
 
-        // 신용 상세 로딩 → 2초 후 history로 replace
         composable("history_loading/{type}") { back ->
             val type = back.arguments?.getString("type") ?: "KCB"
             CreditHistoryLoadingScreen(onBack = { navController.popBackStack() })
@@ -66,6 +71,7 @@ fun AppNavigation() {
             CreditHistoryScreen(
                 scoreType = type,
                 onBack = { navController.popBackStack() },
+                onNavigateToHome = navigateToHome,
                 onTabChange = { newType ->
                     navController.navigate("history_loading/$newType") {
                         popUpTo("history/$type") { inclusive = true }
