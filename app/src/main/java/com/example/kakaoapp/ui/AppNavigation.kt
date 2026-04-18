@@ -58,7 +58,7 @@ fun AppNavigation() {
         composable("history_loading/{type}") { back ->
             val type = back.arguments?.getString("type") ?: "KCB"
             CreditHistoryLoadingScreen(onBack = { navController.popBackStack() })
-            LaunchedEffect(Unit) {
+            LaunchedEffect(type) {
                 delay(2000)
                 navController.navigate("history/$type") {
                     popUpTo("history_loading/$type") { inclusive = true }
@@ -68,16 +68,18 @@ fun AppNavigation() {
 
         composable("history/{type}") { back ->
             val type = back.arguments?.getString("type") ?: "KCB"
-            CreditHistoryScreen(
-                scoreType = type,
-                onBack = { navController.popBackStack() },
-                onNavigateToHome = navigateToHome,
-                onTabChange = { newType ->
-                    navController.navigate("history_loading/$newType") {
-                        popUpTo("history/$type") { inclusive = true }
+            key(type) {
+                CreditHistoryScreen(
+                    scoreType = type,
+                    onBack = { navController.popBackStack() },
+                    onNavigateToHome = navigateToHome,
+                    onTabChange = { newType ->
+                        navController.navigate("history_loading/$newType") {
+                            popUpTo("history/$type") { inclusive = true }
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     }
 }
