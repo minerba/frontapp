@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "623912305944",
+    "project_id": "kakaopay-a00e5",
+    "storage_bucket": "kakaopay-a00e5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:623912305944:android:efc0d68af3489744434a6d",
+        "android_client_info": {
+          "package_name": "com.example.kakaoapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHmz6VfRkmrpI4ufahSob-Hl3mc7BB5Vw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
