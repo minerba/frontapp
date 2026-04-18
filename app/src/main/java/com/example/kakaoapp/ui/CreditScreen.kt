@@ -1,6 +1,7 @@
 package com.example.kakaoapp.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -18,9 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.kakaoapp.R
 import com.example.kakaoapp.ui.theme.*
 
 val BlueAccent = Color(0xFF4A9EFF)
@@ -90,7 +94,7 @@ fun CreditScreen(onBack: () -> Unit, onNavigateToHistory: (String) -> Unit = {})
             Column(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 24.dp)
             ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(48.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(80.dp)) {
                     // KCB
                     Column(modifier = Modifier.clickable { onNavigateToHistory("KCB") }) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -119,7 +123,12 @@ fun CreditScreen(onBack: () -> Unit, onNavigateToHistory: (String) -> Unit = {})
                 FeatureRow(
                     icon = {
                         Box(modifier = Modifier.size(28.dp).clip(CircleShape).background(CardDarker), contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.Refresh, contentDescription = null, tint = Color(0xFFD1D5DB), modifier = Modifier.size(16.dp))
+                            Image(
+                                painter = painterResource(R.drawable.icon_refresh),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                contentScale = ContentScale.Fit
+                            )
                         }
                     },
                     title = "신용점수 자동 올리기",
@@ -203,10 +212,15 @@ fun CreditScreen(onBack: () -> Unit, onNavigateToHistory: (String) -> Unit = {})
             ) {
                 Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Box(
-                        modifier = Modifier.size(44.dp).clip(RoundedCornerShape(12.dp)).background(Color(0xFFFF6B35)),
+                        modifier = Modifier.size(44.dp).clip(RoundedCornerShape(12.dp)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("OKT", color = TextWhite, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Image(
+                            painter = painterResource(R.drawable.icon_okt),
+                            contentDescription = null,
+                            modifier = Modifier.size(44.dp),
+                            contentScale = ContentScale.Fit
+                        )
                     }
                     Column(modifier = Modifier.weight(1f)) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
