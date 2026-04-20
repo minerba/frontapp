@@ -72,7 +72,7 @@ private fun HomeHeader() {
                 modifier = Modifier.size(18.dp).clip(CircleShape).background(RedBadge),
                 contentAlignment = Alignment.Center
             ) {
-                Text("1", color = TextWhite, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text("1", color = TextWhite, fontSize = 11.sp, fontWeight = FontWeight.Bold, lineHeight = 11.sp)
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(20.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -106,7 +106,16 @@ private fun NewFeedButton(modifier: Modifier = Modifier) {
                 .align(Alignment.TopEnd).offset(x = 4.dp, y = (-4).dp),
             contentAlignment = Alignment.Center
         ) {
-            Text("1", color = TextWhite, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+            Text(
+                "1",
+                color = TextWhite,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold,
+                lineHeight = 10.sp,
+                style = androidx.compose.ui.text.TextStyle(
+                    platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
+                )
+            )
         }
     }
 }

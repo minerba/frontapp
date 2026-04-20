@@ -166,7 +166,7 @@ fun CreditScreen(onBack: () -> Unit, onNavigateToHome: () -> Unit = {}, onNaviga
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text("매달 갚는 이자", color = TextWhite, fontSize = 14.sp, fontWeight = FontWeight.Medium)
                         Box(modifier = Modifier.size(16.dp).clip(CircleShape).background(RedBadge), contentAlignment = Alignment.Center) {
-                            Text("N", color = TextWhite, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                            Text("N", color = TextWhite, fontSize = 9.sp, fontWeight = FontWeight.Bold, lineHeight = 9.sp)
                         }
                     }
                     Spacer(modifier = Modifier.height(24.dp))
