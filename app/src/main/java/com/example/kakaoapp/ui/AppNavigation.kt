@@ -3,14 +3,18 @@ package com.example.kakaoapp.ui
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.kakaoapp.data.CreditViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    // ViewModel을 AppNavigation 레벨에서 생성해 모든 화면이 공유
+    val creditViewModel: CreditViewModel = viewModel()
 
     val navigateToHome: () -> Unit = {
         navController.navigate("home") {
@@ -51,7 +55,9 @@ fun AppNavigation() {
             CreditScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateToHome = navigateToHome,
-                onNavigateToHistory = { type -> navController.navigate("history_loading/$type") }
+                onNavigateToHistory = { type -> navController.navigate("history_loading/$type") },
+                onNavigateToLoanBalance = { navController.navigate("loan_balance_loading") },
+                creditViewModel = creditViewModel
             )
         }
 
@@ -77,9 +83,27 @@ fun AppNavigation() {
                         navController.navigate("history_loading/$newType") {
                             popUpTo("history/$type") { inclusive = true }
                         }
-                    }
+                    },
+                    creditViewModel = creditViewModel
                 )
             }
+        }
+
+        composable("loan_balance_loading") {
+            LoanBalanceLoadingScreen(onBack = { navController.popBackStack() })
+            LaunchedEffect(Unit) {
+                delay(1000)
+                navController.navigate("loan_balance") {
+                    popUpTo("loan_balance_loading") { inclusive = true }
+                }
+            }
+        }
+
+        composable("loan_balance") {
+            LoanBalanceScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToHome = navigateToHome
+            )
         }
     }
 }

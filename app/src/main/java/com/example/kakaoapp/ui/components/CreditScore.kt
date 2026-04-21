@@ -53,22 +53,13 @@ fun CreditScoreSection() {
             }
 
             // NICE
-            Box(modifier = Modifier.weight(1f)) {
-                Box(
-                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(CardDarker).padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("점수 보기", color = TextGrayDark, fontSize = 14.sp)
-                        Text("NICE", color = TextGrayDark, fontSize = 12.sp)
-                    }
-                }
-                Box(
-                    modifier = Modifier.size(20.dp).clip(CircleShape).background(RedBadge)
-                        .align(Alignment.TopEnd).offset(x = 6.dp, y = (-6).dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("1", color = TextWhite, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+            Box(
+                modifier = Modifier.weight(1f).clip(RoundedCornerShape(12.dp)).background(CardDarker).padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("점수 보기", color = TextGrayDark, fontSize = 14.sp)
+                    Text("NICE", color = TextGrayDark, fontSize = 12.sp)
                 }
             }
         }

@@ -1,11 +1,13 @@
 package com.example.kakaoapp.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -20,18 +22,67 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.Image
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.kakaoapp.R
+import com.example.kakaoapp.data.CreditViewModel
 import com.example.kakaoapp.ui.theme.*
 
 val BlueAccent = Color(0xFF4A9EFF)
 val BlueAccentBg = Color(0xFF1A2A3A)
 
 @Composable
-fun CreditScreen(onBack: () -> Unit, onNavigateToHome: () -> Unit = {}, onNavigateToHistory: (String) -> Unit = {}) {
+fun CreditScreen(
+    onBack: () -> Unit,
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToHistory: (String) -> Unit = {},
+    onNavigateToLoanBalance: () -> Unit = {},
+    creditViewModel: CreditViewModel = viewModel()
+) {
+    val state by creditViewModel.state.collectAsStateWithLifecycle()
     var selectedTab by remember { mutableIntStateOf(0) }
+
+    // 점수 수정 다이얼로그 상태
+    var editingAgency by remember { mutableStateOf<String?>(null) }
+    var editScoreInput by remember { mutableStateOf("") }
+
+    if (editingAgency != null) {
+        AlertDialog(
+            onDismissRequest = { editingAgency = null },
+            containerColor = Color(0xFF1E1E1E),
+            title = { Text("${editingAgency} 점수 수정", color = TextWhite, fontWeight = FontWeight.SemiBold) },
+            text = {
+                OutlinedTextField(
+                    value = editScoreInput,
+                    onValueChange = { if (it.length <= 4) editScoreInput = it },
+                    label = { Text("점수 (0~1000)", color = TextGrayDark) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = TextWhite,
+                        unfocusedTextColor = TextWhite,
+                        focusedBorderColor = BlueAccent,
+                        unfocusedBorderColor = Color(0xFF4B5563)
+                    )
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    val score = editScoreInput.toIntOrNull()
+                    if (score != null && score in 0..1000) {
+                        creditViewModel.updateScore(editingAgency!!, score)
+                        editingAgency = null
+                    }
+                }) { Text("저장", color = BlueAccent) }
+            },
+            dismissButton = {
+                TextButton(onClick = { editingAgency = null }) { Text("취소", color = TextGrayDark) }
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -78,24 +129,60 @@ fun CreditScreen(onBack: () -> Unit, onNavigateToHome: () -> Unit = {}, onNaviga
 
         Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())) {
 
-            // 신용점수
+            // 신용점수 (길게 누르면 수정 다이얼로그)
             Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 24.dp)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(80.dp)) {
-                    Column(modifier = Modifier.clickable { onNavigateToHistory("KCB") }) {
+                    // KCB
+                    Column(
+                        modifier = Modifier.clickable { onNavigateToHistory("KCB") }
+                    ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text("KCB", color = Color(0xFFD1D5DB), fontSize = 14.sp, fontWeight = FontWeight.Medium)
                             Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color(0xFF9CA3AF), modifier = Modifier.size(14.dp))
                         }
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text("757점", color = TextWhite, fontSize = 38.sp, fontWeight = FontWeight.Bold, letterSpacing = (-1).sp)
+                        if (state.isLoadingScores) {
+                            Box(modifier = Modifier.width(80.dp).height(38.dp).clip(RoundedCornerShape(6.dp)).background(Color(0xFF2A2A2A)))
+                        } else {
+                            Text(
+                                "${state.kcbScore}점",
+                                color = TextWhite,
+                                fontSize = 38.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = (-1).sp,
+                                modifier = Modifier.clickable {
+                                    editingAgency = "KCB"
+                                    editScoreInput = state.kcbScore.toString()
+                                }
+                            )
+                        }
+                        Text("길게 눌러 수정", color = TextGrayDark, fontSize = 10.sp)
                     }
-                    Column(modifier = Modifier.clickable { onNavigateToHistory("NICE") }) {
+                    // NICE
+                    Column(
+                        modifier = Modifier.clickable { onNavigateToHistory("NICE") }
+                    ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text("NICE", color = Color(0xFFD1D5DB), fontSize = 14.sp, fontWeight = FontWeight.Medium)
                             Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color(0xFF9CA3AF), modifier = Modifier.size(14.dp))
                         }
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text("876점", color = TextWhite, fontSize = 38.sp, fontWeight = FontWeight.Bold, letterSpacing = (-1).sp)
+                        if (state.isLoadingScores) {
+                            Box(modifier = Modifier.width(80.dp).height(38.dp).clip(RoundedCornerShape(6.dp)).background(Color(0xFF2A2A2A)))
+                        } else {
+                            Text(
+                                "${state.niceScore}점",
+                                color = TextWhite,
+                                fontSize = 38.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = (-1).sp,
+                                modifier = Modifier.clickable {
+                                    editingAgency = "NICE"
+                                    editScoreInput = state.niceScore.toString()
+                                }
+                            )
+                        }
+                        Text("길게 눌러 수정", color = TextGrayDark, fontSize = 10.sp)
                     }
                 }
             }
@@ -105,12 +192,7 @@ fun CreditScreen(onBack: () -> Unit, onNavigateToHome: () -> Unit = {}, onNaviga
                 FeatureRow(
                     icon = {
                         Box(modifier = Modifier.size(28.dp).clip(CircleShape).background(CardDarker), contentAlignment = Alignment.Center) {
-                            Image(
-                                painter = painterResource(R.drawable.icon_refresh),
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp),
-                                contentScale = ContentScale.Fit
-                            )
+                            Image(painter = painterResource(R.drawable.icon_refresh), contentDescription = null, modifier = Modifier.size(20.dp), contentScale = ContentScale.Fit)
                         }
                     },
                     title = "신용점수 자동 올리기",
@@ -139,7 +221,7 @@ fun CreditScreen(onBack: () -> Unit, onNavigateToHome: () -> Unit = {}, onNaviga
             }
             HorizontalDivider(color = Color(0xFF1F2937).copy(alpha = 0.6f))
 
-            SimpleRow(title = "남은 대출금", actionText = "최신 잔액 보기", actionColor = TextGrayDark)
+            SimpleRow(title = "남은 대출금", actionText = "최신 잔액 보기", actionColor = TextGrayDark, onClick = onNavigateToLoanBalance)
             HorizontalDivider(color = Color(0xFF1F2937).copy(alpha = 0.6f))
             SimpleRow(title = "내 예상 대출", actionText = "최대 50,000P 이자 지원금", actionColor = BlueAccent)
             HorizontalDivider(color = Color(0xFF1F2937).copy(alpha = 0.6f))
@@ -178,15 +260,9 @@ fun CreditScreen(onBack: () -> Unit, onNavigateToHome: () -> Unit = {}, onNaviga
             }
             HorizontalDivider(color = Color(0xFF1F2937).copy(alpha = 0.6f))
 
-            // AD 배너
             Column(modifier = Modifier.padding(16.dp).clip(RoundedCornerShape(16.dp)).background(CardDark).padding(16.dp)) {
                 Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Image(
-                        painter = painterResource(R.drawable.icon_okt),
-                        contentDescription = null,
-                        modifier = Modifier.size(44.dp),
-                        contentScale = ContentScale.Fit
-                    )
+                    Image(painter = painterResource(R.drawable.icon_okt), contentDescription = null, modifier = Modifier.size(44.dp), contentScale = ContentScale.Fit)
                     Column(modifier = Modifier.weight(1f)) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text("내 명의 차가 있다면?", color = TextWhite, fontSize = 14.sp, fontWeight = FontWeight.Medium)
@@ -238,9 +314,9 @@ private fun BadgeChip(text: String, textColor: Color, bgColor: Color) {
 }
 
 @Composable
-private fun SimpleRow(title: String, actionText: String, actionColor: Color) {
+private fun SimpleRow(title: String, actionText: String, actionColor: Color, onClick: () -> Unit = {}) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 16.dp),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 20.dp, vertical = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

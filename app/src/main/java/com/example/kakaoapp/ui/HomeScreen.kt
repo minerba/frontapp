@@ -44,11 +44,16 @@ fun HomeScreen(onNavigateToCredit: () -> Unit = {}) {
                 Box(modifier = Modifier.padding(horizontal = 12.dp)) { ServiceGrid(onCreditClick = onNavigateToCredit) }
                 Box(modifier = Modifier.padding(horizontal = 12.dp)) { AdBanner() }
                 Box(modifier = Modifier.padding(horizontal = 12.dp)) { CreditScoreSection() }
+                Box(modifier = Modifier.padding(horizontal = 12.dp)) { PayPointSection() }
+                Box(modifier = Modifier.padding(horizontal = 12.dp)) { BalanceFightSection() }
+                Box(modifier = Modifier.padding(horizontal = 12.dp)) { FortuneSection() }
+                Box(modifier = Modifier.padding(horizontal = 12.dp)) { PsychTestSection() }
+                Box(modifier = Modifier.padding(horizontal = 12.dp)) { PayAttentionSection() }
+                Box(modifier = Modifier.padding(horizontal = 12.dp)) { MiniGameSection() }
+                Box(modifier = Modifier.padding(horizontal = 12.dp)) { RecommendSection() }
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
-
-        NewFeedButton(modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 72.dp))
 
         BottomNavBar(
             selectedIndex = selectedNavIndex,
@@ -99,23 +104,6 @@ private fun NewFeedButton(modifier: Modifier = Modifier) {
         ) {
             Text("새 피드", color = TextWhite, fontSize = 14.sp, fontWeight = FontWeight.Medium)
             Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = TextWhite, modifier = Modifier.size(16.dp))
-        }
-        Box(
-            modifier = Modifier
-                .size(20.dp).clip(CircleShape).background(RedBadge)
-                .align(Alignment.TopEnd).offset(x = 4.dp, y = (-4).dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                "1",
-                color = TextWhite,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
-                lineHeight = 10.sp,
-                style = androidx.compose.ui.text.TextStyle(
-                    platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
-                )
-            )
         }
     }
 }

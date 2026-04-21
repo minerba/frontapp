@@ -1,0 +1,12 @@
+[build]
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/credit-scores"
+  to = "/.netlify/functions/credit-scores"
+  status = 200
+
+[[redirects]]
+  from = "/api/credit-history"
+  to = "/.netlify/functions/credit-history"
+  status = 200

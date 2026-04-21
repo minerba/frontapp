@@ -3,6 +3,7 @@ package com.example.kakaoapp.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,15 +27,27 @@ fun AdBanner() {
         verticalAlignment = Alignment.Top
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text("라이나생명THE건강한치아보험", color = TextGrayDark, fontSize = 11.sp)
+            Text("라이나생명", color = TextGrayDark, fontSize = 11.sp)
             Spacer(modifier = Modifier.height(2.dp))
-            Text("충전치료 몇번이든 보장", color = TextWhite, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+            Text("암보험료 월 2만원대,\n라이나생명 암보험", color = TextWhite, fontSize = 14.sp, fontWeight = FontWeight.Medium, lineHeight = 20.sp)
             Spacer(modifier = Modifier.height(4.dp))
-            Text("가입 후 91일부터 보장, 충전치료 1년 이내 치료 시 50% 보장", color = TextGrayDarker, fontSize = 11.sp, lineHeight = 15.sp)
+            Text("최대 5천만원 보장, 지금 바로 확인하세요", color = TextGrayDarker, fontSize = 11.sp, lineHeight = 15.sp)
         }
         Spacer(modifier = Modifier.width(12.dp))
         Box {
-            Text("🦷", fontSize = 36.sp)
+            Box(
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color(0xFF003087)),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("LINA", color = TextWhite, fontSize = 8.sp, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
+                    HorizontalDivider(modifier = Modifier.width(32.dp).padding(vertical = 2.dp), color = Color(0x66FFFFFF), thickness = 1.dp)
+                    Text("생명보험", color = TextWhite, fontSize = 7.sp)
+                }
+            }
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
