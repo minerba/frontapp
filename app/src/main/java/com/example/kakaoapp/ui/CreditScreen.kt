@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -22,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,45 +42,6 @@ fun CreditScreen(
 ) {
     val state by creditViewModel.state.collectAsStateWithLifecycle()
     var selectedTab by remember { mutableIntStateOf(0) }
-
-    // 점수 수정 다이얼로그 상태
-    var editingAgency by remember { mutableStateOf<String?>(null) }
-    var editScoreInput by remember { mutableStateOf("") }
-
-    if (editingAgency != null) {
-        AlertDialog(
-            onDismissRequest = { editingAgency = null },
-            containerColor = Color(0xFF1E1E1E),
-            title = { Text("${editingAgency} 점수 수정", color = TextWhite, fontWeight = FontWeight.SemiBold) },
-            text = {
-                OutlinedTextField(
-                    value = editScoreInput,
-                    onValueChange = { if (it.length <= 4) editScoreInput = it },
-                    label = { Text("점수 (0~1000)", color = TextGrayDark) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = TextWhite,
-                        unfocusedTextColor = TextWhite,
-                        focusedBorderColor = BlueAccent,
-                        unfocusedBorderColor = Color(0xFF4B5563)
-                    )
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    val score = editScoreInput.toIntOrNull()
-                    if (score != null && score in 0..1000) {
-                        creditViewModel.updateScore(editingAgency!!, score)
-                        editingAgency = null
-                    }
-                }) { Text("저장", color = BlueAccent) }
-            },
-            dismissButton = {
-                TextButton(onClick = { editingAgency = null }) { Text("취소", color = TextGrayDark) }
-            }
-        )
-    }
 
     Column(
         modifier = Modifier
@@ -129,13 +88,11 @@ fun CreditScreen(
 
         Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())) {
 
-            // 신용점수 (길게 누르면 수정 다이얼로그)
+            // 신용점수 (읽기 전용)
             Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 24.dp)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(80.dp)) {
                     // KCB
-                    Column(
-                        modifier = Modifier.clickable { onNavigateToHistory("KCB") }
-                    ) {
+                    Column(modifier = Modifier.clickable { onNavigateToHistory("KCB") }) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text("KCB", color = Color(0xFFD1D5DB), fontSize = 14.sp, fontWeight = FontWeight.Medium)
                             Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color(0xFF9CA3AF), modifier = Modifier.size(14.dp))
@@ -144,24 +101,11 @@ fun CreditScreen(
                         if (state.isLoadingScores) {
                             Box(modifier = Modifier.width(80.dp).height(38.dp).clip(RoundedCornerShape(6.dp)).background(Color(0xFF2A2A2A)))
                         } else {
-                            Text(
-                                "${state.kcbScore}점",
-                                color = TextWhite,
-                                fontSize = 38.sp,
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = (-1).sp,
-                                modifier = Modifier.clickable {
-                                    editingAgency = "KCB"
-                                    editScoreInput = state.kcbScore.toString()
-                                }
-                            )
+                            Text("${state.kcbScore}점", color = TextWhite, fontSize = 38.sp, fontWeight = FontWeight.Bold, letterSpacing = (-1).sp)
                         }
-                        Text("길게 눌러 수정", color = TextGrayDark, fontSize = 10.sp)
                     }
                     // NICE
-                    Column(
-                        modifier = Modifier.clickable { onNavigateToHistory("NICE") }
-                    ) {
+                    Column(modifier = Modifier.clickable { onNavigateToHistory("NICE") }) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text("NICE", color = Color(0xFFD1D5DB), fontSize = 14.sp, fontWeight = FontWeight.Medium)
                             Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color(0xFF9CA3AF), modifier = Modifier.size(14.dp))
@@ -170,19 +114,8 @@ fun CreditScreen(
                         if (state.isLoadingScores) {
                             Box(modifier = Modifier.width(80.dp).height(38.dp).clip(RoundedCornerShape(6.dp)).background(Color(0xFF2A2A2A)))
                         } else {
-                            Text(
-                                "${state.niceScore}점",
-                                color = TextWhite,
-                                fontSize = 38.sp,
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = (-1).sp,
-                                modifier = Modifier.clickable {
-                                    editingAgency = "NICE"
-                                    editScoreInput = state.niceScore.toString()
-                                }
-                            )
+                            Text("${state.niceScore}점", color = TextWhite, fontSize = 38.sp, fontWeight = FontWeight.Bold, letterSpacing = (-1).sp)
                         }
-                        Text("길게 눌러 수정", color = TextGrayDark, fontSize = 10.sp)
                     }
                 }
             }

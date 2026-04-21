@@ -46,17 +46,6 @@ class CreditViewModel : ViewModel() {
         }
     }
 
-    fun updateScore(agency: String, score: Int) {
-        viewModelScope.launch {
-            runCatching { api.updateScore(UpdateScoreRequest(agency, score)) }.onSuccess { res ->
-                if (res.isSuccessful) {
-                    if (agency == "KCB") _state.value = _state.value.copy(kcbScore = score)
-                    else _state.value = _state.value.copy(niceScore = score)
-                }
-            }
-        }
-    }
-
     fun loadHistory(agency: String) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoadingHistory = true, error = null)
@@ -70,30 +59,6 @@ class CreditViewModel : ViewModel() {
                 }
             }.onFailure {
                 _state.value = _state.value.copy(isLoadingHistory = false, error = it.message)
-            }
-        }
-    }
-
-    fun addHistory(item: CreditHistoryItem, onDone: () -> Unit = {}) {
-        viewModelScope.launch {
-            runCatching { api.addHistory(item) }.onSuccess { res ->
-                if (res.isSuccessful) { loadHistory(item.agency); onDone() }
-            }
-        }
-    }
-
-    fun updateHistory(id: Int, item: CreditHistoryItem, onDone: () -> Unit = {}) {
-        viewModelScope.launch {
-            runCatching { api.updateHistory(id, item) }.onSuccess { res ->
-                if (res.isSuccessful) { loadHistory(item.agency); onDone() }
-            }
-        }
-    }
-
-    fun deleteHistory(id: Int, agency: String) {
-        viewModelScope.launch {
-            runCatching { api.deleteHistory(id) }.onSuccess { res ->
-                if (res.isSuccessful) loadHistory(agency)
             }
         }
     }

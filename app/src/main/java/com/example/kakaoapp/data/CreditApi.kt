@@ -39,20 +39,8 @@ interface CreditApiService {
     @GET("api/credit-scores")
     suspend fun getScores(): Response<List<CreditScore>>
 
-    @PUT("api/credit-scores")
-    suspend fun updateScore(@Body body: UpdateScoreRequest): Response<CreditScore>
-
     @GET("api/credit-history")
     suspend fun getHistory(@Query("agency") agency: String): Response<List<CreditHistoryItem>>
-
-    @POST("api/credit-history")
-    suspend fun addHistory(@Body body: CreditHistoryItem): Response<CreditHistoryItem>
-
-    @PUT("api/credit-history")
-    suspend fun updateHistory(@Query("id") id: Int, @Body body: CreditHistoryItem): Response<CreditHistoryItem>
-
-    @DELETE("api/credit-history")
-    suspend fun deleteHistory(@Query("id") id: Int): Response<Map<String, Boolean>>
 }
 
 // ── Singleton ─────────────────────────────────────────
